@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { subscribeNewsletter, idleState, type FormState } from "./actions";
+import { subscribeNewsletter, type FormState } from "./actions";
+
+const idleState: FormState = { status: "idle", message: "" };
 
 export function NewsletterForm() {
   const [state, formAction, pending] = useActionState<FormState, FormData>(

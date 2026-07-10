@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitSizeFinder, idleState, type FormState } from "./actions";
+import { submitSizeFinder, type FormState } from "./actions";
+
+const idleState: FormState = { status: "idle", message: "" };
 
 const fieldClass =
   "w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-black outline-none placeholder:text-neutral-500 focus:border-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white";

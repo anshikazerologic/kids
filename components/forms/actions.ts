@@ -2,6 +2,7 @@
 
 import { promises as fs } from "fs";
 import path from "path";
+import { shopifyAdminQuery } from "lib/shopifyAdmin.server";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
@@ -36,8 +37,6 @@ export type FormState = {
   errors?: Record<string, string>;
 };
 
-const idleState: FormState = { status: "idle", message: "" };
-
 export async function subscribeNewsletter(
   _prev: FormState,
   formData: FormData,
@@ -71,7 +70,6 @@ export async function submitContact(
 ): Promise<FormState> {
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
-  const subject = String(formData.get("subject") || "").trim();
   const message = String(formData.get("message") || "").trim();
   const errors: Record<string, string> = {};
 
@@ -88,7 +86,50 @@ export async function submitContact(
     };
   }
 
-  await appendJson("contact.json", { name, email, subject, message });
+  // Submit to Shopify as a metaobject
+  try {
+    const METAOBJECT_CREATE = `
+      mutation metaobjectCreate($metaobject: MetaobjectCreateInput!) {
+        metaobjectCreate(metaobject: $metaobject) {
+          metaobject {
+            id
+            handle
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const result = await shopifyAdminQuery<{
+      metaobjectCreate: {
+        metaobject: { id: string; handle: string } | null;
+        userErrors: { field: string[]; message: string }[];
+      };
+    }>(undefined, METAOBJECT_CREATE, {
+      metaobject: {
+        type: "contact_submission",
+        fields: [
+          { key: "name", value: name },
+          { key: "email", value: email },
+          { key: "message", value: message },
+        ],
+      },
+    });
+
+    const userErrors = result?.metaobjectCreate?.userErrors;
+    if (userErrors && userErrors.length > 0) {
+      console.error(
+        "Shopify metaobject creation errors:",
+        JSON.stringify(userErrors),
+      );
+    }
+  } catch (e) {
+    console.error("Failed to create Shopify metaobject:", e);
+  }
+
   return {
     status: "success",
     message: "Thanks! Our team will get back to you within 1–2 business days.",
@@ -127,4 +168,86 @@ export async function submitSizeFinder(
   };
 }
 
-export { idleState };
+export async function submitBecomePartOfIt(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const sport = String(formData.get("sport") || "").trim();
+  const skillLevel = String(formData.get("skillLevel") || "").trim();
+  const productInterest = String(formData.get("productInterest") || "").trim();
+  const budgetRange = String(formData.get("budgetRange") || "").trim();
+  const trainingFrequency = String(formData.get("trainingFrequency") || "").trim();
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const errors: Record<string, string> = {};
+
+  if (!sport) errors.sport = "Please select a sport.";
+  if (!skillLevel) errors.skillLevel = "Please select your skill level.";
+  if (!productInterest) errors.productInterest = "Please select a product interest.";
+  if (!budgetRange) errors.budgetRange = "Please select a budget range.";
+  if (!trainingFrequency) errors.trainingFrequency = "Please select a training frequency.";
+  if (!name) errors.name = "Please enter your name.";
+  if (!email || !EMAIL_RE.test(email)) errors.email = "Please enter a valid email.";
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      status: "error",
+      message: "Please fix the highlighted fields.",
+      errors,
+    };
+  }
+
+  // Submit to Shopify as a metaobject
+  try {
+    const METAOBJECT_CREATE = `
+      mutation metaobjectCreate($metaobject: MetaobjectCreateInput!) {
+        metaobjectCreate(metaobject: $metaobject) {
+          metaobject {
+            id
+            handle
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const result = await shopifyAdminQuery<{
+      metaobjectCreate: {
+        metaobject: { id: string; handle: string } | null;
+        userErrors: { field: string[]; message: string }[];
+      };
+    }>(undefined, METAOBJECT_CREATE, {
+      metaobject: {
+        type: "become_part_of_it_submission",
+        fields: [
+          { key: "sport", value: sport },
+          { key: "skill_level", value: skillLevel },
+          { key: "product_interest", value: productInterest },
+          { key: "budget_range", value: budgetRange },
+          { key: "training_frequency", value: trainingFrequency },
+          { key: "name", value: name },
+          { key: "email", value: email },
+        ],
+      },
+    });
+
+    const userErrors = result?.metaobjectCreate?.userErrors;
+    if (userErrors && userErrors.length > 0) {
+      console.error(
+        "Shopify metaobject creation errors:",
+        JSON.stringify(userErrors),
+      );
+    }
+  } catch (e) {
+    console.error("Failed to create Shopify metaobject:", e);
+  }
+
+  return {
+    status: "success",
+    message: "You're part of it! We'll reach out soon. 🎉",
+  };
+}
+
