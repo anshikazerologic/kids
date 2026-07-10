@@ -5,7 +5,7 @@ export const heroContent = {
   headingLine3: "for Athletes",
 
   ctaLabel: "Get Started",
-  ctaUrl: "#",
+  ctaUrl: "/product",
 
   brandShortText: "ia",
   brandName: "Kidz",
@@ -57,6 +57,7 @@ export const  socialProof = {
     description:
       "At AthleteIQ, we understand that every athlete's path to success is unique. That's why we offer a comprehensive range of services designed to empower athletes, coaches, and sports enthusiasts at every level.",
     ctaLabel: 'Get Started',
+    ctaUrl: "/product",
     footerLabel: 'AthleteIQ // 2026 Core telemetry stable',
     serviceCards: [
       {

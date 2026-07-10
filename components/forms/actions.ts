@@ -2,6 +2,7 @@
 
 import { promises as fs } from "fs";
 import path from "path";
+import { redirect } from "next/navigation";
 import { shopifyAdminQuery } from "lib/shopifyAdmin.server";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -245,9 +246,6 @@ export async function submitBecomePartOfIt(
     console.error("Failed to create Shopify metaobject:", e);
   }
 
-  return {
-    status: "success",
-    message: "You're part of it! We'll reach out soon. 🎉",
-  };
+  redirect(`/search/${sport}`);
 }
 

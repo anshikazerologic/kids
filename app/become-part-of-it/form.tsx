@@ -9,18 +9,6 @@ const fieldClass =
   "w-full bg-[#f8f9fa] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 focus:border-[#afd3f8] outline-none";
 const errorClass = "text-sm text-red-600";
 
-const sports = [
-  { label: "Soccer", value: "soccer" },
-  { label: "Basketball", value: "basketball" },
-  { label: "Tennis", value: "tennis" },
-  { label: "Swimming", value: "swimming" },
-  { label: "Running", value: "running" },
-  { label: "Cycling", value: "cycling" },
-  { label: "Baseball", value: "baseball" },
-  { label: "Football", value: "football" },
-  { label: "Gymnastics", value: "gymnastics" },
-  { label: "Other", value: "other" },
-];
 
 const skillLevels = [
   { label: "Beginner", value: "beginner" },
@@ -51,7 +39,7 @@ const trainingFrequencies = [
   { label: "Occasionally", value: "occasionally" },
 ];
 
-export default function BecomePartOfItForm() {
+export default function BecomePartOfItForm({ sports }: { sports: { label: string; value: string }[] }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     submitBecomePartOfIt,
     idleState,

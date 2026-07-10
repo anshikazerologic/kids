@@ -6,11 +6,11 @@ type AdminGraphqlResponse<T> = {
 };
 
 export async function shopifyAdminQuery<T>(
-  env: Env | undefined,
+  _env: Record<string, string | undefined> | undefined,
   query: string,
   variables?: Record<string, unknown>,
 ) {
-  const token = env?.SHOPIFY_ADMIN_API_TOKEN || process.env.SHOPIFY_ADMIN_API_TOKEN;
+  const token = _env?.SHOPIFY_ADMIN_API_TOKEN || process.env.SHOPIFY_ADMIN_API_TOKEN;
 
   if (!token) {
     throw new Error('SHOPIFY_ADMIN_API_TOKEN environment variable is not set');
@@ -21,7 +21,7 @@ export async function shopifyAdminQuery<T>(
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const storeDomain = env?.PUBLIC_STORE_DOMAIN || process.env.PUBLIC_STORE_DOMAIN;
+    const storeDomain = _env?.PUBLIC_STORE_DOMAIN || process.env.PUBLIC_STORE_DOMAIN;
     
     if (!storeDomain) {
       throw new Error('PUBLIC_STORE_DOMAIN environment variable is not set');

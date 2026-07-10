@@ -9,6 +9,7 @@ export default function ServicesCarousel(){
         headingLine3,
         description,
         ctaLabel,
+        ctaUrl,
         footerLabel,
     }= services;
     const fallbackServiceImages = [
@@ -31,9 +32,9 @@ export default function ServicesCarousel(){
       labelLine2: card.labelLine2,
       type: card.cardType === 'image' ? 'image' : 'vertical-text',
       image:
-        card.image?.url ||
+        (card as any).image?.url ||
         fallbackServiceImages[idx % fallbackServiceImages.length],
-      imageAlt: card.image?.altText,
+      imageAlt: (card as any).image?.altText,
       bg: archBackgrounds[idx] ?? archBackgrounds[1],
     })) ?? [];
     // Auto-slide on mobile every 2 seconds
@@ -76,11 +77,16 @@ export default function ServicesCarousel(){
             </p>
 
             <div className="flex justify-center lg:justify-start">
-              <button className="bg-white border border-gray-200 rounded-full pl-6 pr-2 py-2 flex items-center space-x-4 shadow-sm">
-                <span>{ctaLabel}</span>
+              <button className=" rounded-full pl-6 pr-2 py-2 flex items-center ">
+                 <a
+                href={ctaUrl}
+                className="bg-white border border-gray-200 hover:border-slate-900 hover:scale-[1.03] active:scale-[0.98] rounded-full pl-6 pr-2 py-2 flex items-center space-x-4 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer"
+              >
+                <span className='text-black'>{ctaLabel}</span>
                 <span className="w-9 h-9 rounded-full bg-[#afd3f8] flex items-center justify-center">
                   <ArrowUpRight className="w-4 h-4" />
                 </span>
+                </a>
               </button>
             </div>
           </div>
